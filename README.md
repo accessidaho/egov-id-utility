@@ -23,5 +23,5 @@ Import the element:
 Add the element and set properties:
 
 ```html
-<id-utility base-url="https://beta.accessidaho.org/ai/polymer/"></id-alert>
+<id-utility base-url="https://beta.accessidaho.org/ai/polymer/"></id-utility>
 ```
