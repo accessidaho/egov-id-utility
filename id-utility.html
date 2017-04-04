@@ -1,0 +1,321 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../id-app-layout/id-app-layout-styles.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html">
+<link rel="import" href="../id-button/id-button.html">
+
+<!--
+`id-utility`
+Utility navigation element.
+
+@demo demo/index.html
+-->
+
+<dom-module id="id-utility">
+  <template>
+    <style include="id-app-layout-styles">
+      :host {
+        background: #222;
+        border-bottom: 1px solid #444;
+        color: #efefef;
+        font-size: .9rem;
+        position: relative;
+        z-index: 4;
+      }
+
+      .tag-line {
+        padding: 5px 0px 5px 35px;
+        position: relative;
+        display: none;
+      }
+
+      .navigation > div {
+        float: right;
+        background: #222;
+        position: relative;
+        z-index: 6;
+      }
+
+      .navigation a, .navigation button {
+        background: transparent;
+        border: 0;
+        display: block;
+        font-size: inherit;
+        line-height: inherit;
+        margin: 0;
+        float: left;
+        padding: 5px 10px;
+        color: #efefef;
+        border-right: 1px solid #444;
+        border-left: 1px solid #444;
+        text-decoration: none;
+        margin-right: -1px;
+        position: relative;
+        cursor: pointer;
+      }
+
+      .navigation a:hover, .navigation button:hover {
+        background: #444;
+      }
+
+      .navigation a:focus, .navigation button:focus {
+        outline: none;
+      }
+
+      .navigation .user {
+        padding-left: 28px;
+      }
+
+      .navigation .switch {
+        padding-right: 26px;
+      }
+
+      .user:before, .tag-line:before, .switch:before {
+        display: block;
+        font: normal normal normal 14px/1 FontAwesome;
+        -webkit-font-smoothing: antialiased;
+        opacity: 0.7;
+        font-size: 16px;
+        position: absolute;
+        top: 50%;
+        left: 10px;
+        margin-top: -8px;
+      }
+
+      .user:before {
+        content: "\f007";
+      }
+
+      .switch:before {
+        content: "\f0d7";
+        right: 10px;
+        left: auto;
+      }
+
+      .tag-line:before {
+        content: "\f023";
+        left: 15px;
+      }
+
+      @media (min-width: 768px) {
+        .tag-line {
+          display: block;
+        }
+
+        .navigation > div {
+          float: right;
+          padding-right: 1px;
+        }
+
+        .navigation a {
+          float: left;
+          display: block;
+        }
+      }
+
+      .flex > * {
+        -webkit-flex-basis: 0;
+            -ms-flex-preferred-size: 0;
+                flex-basis: 0;
+        -webkit-box-flex: 1;
+        -webkit-flex-grow: 1;
+            -ms-flex-positive: 1;
+                flex-grow: 1;
+        max-width: 100%;
+      }
+
+      #switchForm.hidden {
+        opacity: 0;
+        bottom: 0;
+      }
+
+      #switchForm {
+        position: absolute;
+        z-index: 3;
+        right: 0;
+        bottom: -53px;
+        padding: .5rem 10px;
+        background: #222;
+        border: 1px solid #444;
+        border-top: 0;
+        opacity: 1;
+        -webkit-transition: opacity ease-in-out .15s, bottom ease-in-out .25s;
+        transition: opacity ease-in-out .15s, bottom ease-in-out .25s;
+        -o-transition: opacity ease-in-out .15s, bottom ease-in-out .25s;
+      }
+
+      #switchForm input {
+        font-size: 100%;
+        display: block;
+        width: 200px;
+        padding: .5rem .75rem;
+        line-height: 1.25;
+        color: #464a4c;
+        background-color: #fff;
+        background-image: none;
+        -webkit-background-clip: padding-box;
+        background-clip: padding-box;
+        border: 1px solid rgba(0,0,0,.15);
+        border-radius: .25rem;
+        -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+        transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+        -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+        transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+        transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+        float: left;
+        margin-right: .5rem;
+      }
+
+      #switchForm input:focus {
+        color: #464a4c;
+        background-color: #fff;
+        border-color: #5cb3fd;
+        outline: 0;
+      }
+
+      id-button {
+        float: left;
+      }
+    </style>
+
+    <div class="container">
+      <div class="flex">
+        <div class="tag-line">[[tag]]</div>
+        <div class="navigation">
+          <div>
+            <a href="#">Idaho.gov</a>
+            <template is="dom-if" if="[[loggedIn]]">
+              <button class="user">[[user.username]]</button>
+
+              <template is="dom-if" if="[[_switchEnabled(user.authorities)]]">
+                <button class="switch" on-click="_switchToggle">Switch</button>
+              </template>
+
+              <template is="dom-if" if="[[user.isSwitched]]">
+                <button on-click="_resumeUser">Resume as [[user.switchedUserOriginalUsername]]</button>
+              </template>
+              <button on-click="_signOut">Sign Out</button>
+            </template>
+            <template is="dom-if" if="[[!loggedIn]]">
+              <button on-click="_signIn">Sign In</button>
+            </template>
+          </div>
+        </div>
+      </div>
+      <form action$="[[baseUrl]]login/impersonate" method="POST" id="switchForm" class$="[[_switchVisible(switchDisplay)]]">
+        <input id="input" name="username">
+        <id-button type="submit" color="secondary" on-button-click="_switchUser">Switch</id-button>
+      </form>
+    </div>
+    <iron-ajax
+      id="userxhr"
+      handle-as="json"
+      on-response="_userFound">
+    </iron-ajax>
+  </template>
+
+  <script>
+    class IdUtility extends Polymer.Element {
+      static get is() { return 'id-utility'; }
+      static get properties() {
+        return {
+          /**
+           * Top right tagline.
+           */
+          tag: {
+            type: String,
+            value: 'A secure service from Idaho.gov'
+          },
+          /**
+           * Base URL for getting user information.
+           */
+          baseUrl: String
+        };
+      }
+
+      ready() {
+        super.ready();
+        this.$.userxhr.url = this.baseUrl + 'user';
+        this.$.userxhr.generateRequest();
+        this.loggedIn = false;
+      }
+
+      /**
+       * Toggles the switch display on and off.
+       * @return null
+       */
+      _switchToggle() {
+        this.switchDisplay = !this.switchDisplay;
+      }
+
+      /**
+       * Displays the class name 'hidden' with hidden.
+       * @param  {boolean} switchDisplay this.switchDisplay
+       * @return string                  class name to display
+       */
+      _switchVisible(switchDisplay) {
+        return (!switchDisplay) ? 'hidden' : '';
+      }
+
+      /**
+       * Submits the form for switching user.
+       * @return null
+       */
+      _switchUser() {
+        this.$.switchForm.submit();
+      }
+
+      /**
+       * A courtesy function for navigating out.
+       * @return null
+       */
+      _resumeUser() {
+        window.location = this.baseUrl + "logout/impersonate";
+      }
+
+      /**
+       * Formats the authorities for easier searching and returns if role is found.
+       * @param  {array} authorities Authorities returned by _userFound
+       * @return boolean             If the role FW_ADMIN is found.
+       */
+      _switchEnabled(authorities) {
+        let authories = authorities.map((auth) => {
+          return auth.authority;
+        });
+
+        return (authories.findIndex(x => x === 'ROLE_FWADMIN') !== -1);
+      }
+
+      /**
+       * Response handler for ajax call
+       * @param  {object} e event detail
+       * @return null
+       */
+      _userFound(e) {
+        this.user = e.detail.response;
+        this.loggedIn = true;
+      }
+
+      /**
+       * Courtesy function for navigating to Sign In
+       * @param  {object} e event detail;
+       * @return null
+       */
+      _signIn(e) {
+        e.preventDefault();
+        window.location = this.baseUrl + "login/index";
+      }
+
+      /**
+       * Courtesy function for navigating to Sign Out
+       * @param  {object} e event detail
+       * @return null
+       */
+      _signOut(e) {
+        e.preventDefault();
+        window.location = this.baseUrl + "logout/index";
+      }
+    }
+
+    window.customElements.define(IdUtility.is, IdUtility);
+  </script>
+</dom-module>

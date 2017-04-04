@@ -1,0 +1,20 @@
+{
+  "name": "id-utility",
+  "description": "Idaho utility navigation element",
+  "main": "id-utility.html",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^2.0.0-rc.2"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#2.0-preview",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#2.0-preview",
+    "web-component-tester": "v6.0.0-prerelease.5",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0-rc.5",
+    "iron-ajax": "PolymerElements/iron-ajax#2.0-preview",
+    "id-app-layout": "https://github.com/accessidaho/egov-id-app-layout.git",
+    "id-button": "https://github.com/accessidaho/egov-id-button.git"
+  },
+  "resolutions": {
+    "polymer": "^2.0.0-rc.2"
+  }
+}
