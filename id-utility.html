@@ -279,6 +279,10 @@ Utility navigation element.
        * @return boolean             If the role FW_ADMIN is found.
        */
       _switchEnabled(authorities) {
+        if (!authorities) {
+          return false;
+        }
+
         let authories = authorities.map((auth) => {
           return auth.authority;
         });
@@ -292,8 +296,10 @@ Utility navigation element.
        * @return null
        */
       _userFound(e) {
-        this.user = e.detail.response;
-        this.loggedIn = true;
+        if (e.detail.response) {
+          this.user = e.detail.response;
+          this.loggedIn = true;
+        }
       }
 
       /**
