@@ -209,7 +209,8 @@ Utility navigation element.
     <iron-ajax
       id="userxhr"
       handle-as="json"
-      on-response="_userFound">
+      on-response="_userFound"
+      on-error="_userNotFound">
     </iron-ajax>
   </template>
 
@@ -301,6 +302,15 @@ Utility navigation element.
           this.user = e.detail.response;
           this.loggedIn = true;
         }
+      }
+
+      /**
+       * Response handler for ajax call error
+       * @param  {object} e event detail
+       * @return null
+       */
+      _userNotFound(e) {
+        // window.location = '#/welcome';
       }
 
       /**
