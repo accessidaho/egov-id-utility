@@ -235,7 +235,6 @@ Utility navigation element.
 
       ready() {
         super.ready();
-        this.baseUrl = window.__env.api.host;
         this.$.userxhr.url = this.baseUrl + 'user';
         this.$.userxhr.generateRequest();
         this.loggedIn = false;
@@ -272,7 +271,7 @@ Utility navigation element.
        * @return null
        */
       _resumeUser() {
-        window.location = this.baseUrl + "logout/impersonate";
+        window.location = "logout/impersonate";
       }
 
       /**
