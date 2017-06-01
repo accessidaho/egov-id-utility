@@ -22,6 +22,12 @@ Utility navigation element.
         z-index: 4;
       }
 
+      @media print {
+        :host {
+          display: none;
+        }
+      }
+
       .tag-line {
         padding: 5px 0px 5px 35px;
         position: relative;
