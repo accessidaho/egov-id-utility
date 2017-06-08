@@ -235,7 +235,18 @@ Utility navigation element.
           /**
            * Base URL for getting user information.
            */
-          baseUrl: String
+          baseUrl: String,
+
+          route: {
+            type: Object,
+            observer: '_routeChanged'
+          },
+
+          navigation: {
+            type: Array,
+            value: []
+          }
+
         };
       }
 
@@ -306,7 +317,9 @@ Utility navigation element.
         if (e.detail.response) {
           this.user = e.detail.response;
           this.loggedIn = true;
+          this.xhrFinished = true;
         }
+        this.__checkAuthState();
       }
 
       /**
@@ -315,7 +328,10 @@ Utility navigation element.
        * @return null
        */
       _userNotFound(e) {
-        // window.location = '#/welcome';
+        // window.location = this.baseUrl + "login/index";
+        this.loggedIn = false;
+        this.xhrFinished = true;
+        this.__checkAuthState();
       }
 
       /**
@@ -340,6 +356,23 @@ Utility navigation element.
 
       __goToIdaho() {
         window.location = 'https://www.idaho.gov';
+      }
+
+      __checkAuthState() {
+        const route = this.navigation.find(x => x.path === this.route.path);
+
+        console.log(route.protected, this.loggedIn, this.xhrFinished);
+        if (route && route.protected && !this.loggedIn && this.xhrFinished) {
+          this.set('route.path', '/welcome');
+        }
+      }
+
+      _routeChanged() {
+        if (this.loggedIn || !this.route) {
+          return;
+        }
+        this.__checkAuthState();
+
       }
     }
 
