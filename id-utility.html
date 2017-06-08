@@ -314,6 +314,7 @@ Utility navigation element.
        * @return null
        */
       _userFound(e) {
+        console.log(e.detail.response);
         this.user = e.detail.response;
         this.loggedIn = true;
         this.xhrFinished = true;
