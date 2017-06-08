@@ -314,11 +314,9 @@ Utility navigation element.
        * @return null
        */
       _userFound(e) {
-        if (e.detail.response) {
-          this.user = e.detail.response;
-          this.loggedIn = true;
-          this.xhrFinished = true;
-        }
+        this.user = e.detail.response;
+        this.loggedIn = true;
+        this.xhrFinished = true;
         this.__checkAuthState();
       }
 
@@ -361,7 +359,7 @@ Utility navigation element.
       __checkAuthState() {
         const route = this.navigation.find(x => x.path === this.route.path);
 
-        console.log(route.protected, this.loggedIn, this.xhrFinished);
+        console.log(route, this.loggedIn, this.xhrFinished);
         if (route && route.protected && !this.loggedIn && this.xhrFinished) {
           this.set('route.path', '/welcome');
         }
