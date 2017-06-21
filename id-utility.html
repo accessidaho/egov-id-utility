@@ -3,13 +3,6 @@
 <link rel="import" href="../iron-ajax/iron-ajax.html">
 <link rel="import" href="../id-button/id-button.html">
 
-<!--
-`id-utility`
-Utility navigation element.
-
-@demo demo/index.html
--->
-
 <dom-module id="id-utility">
   <template>
     <style include="id-app-layout-styles">
@@ -221,6 +214,14 @@ Utility navigation element.
   </template>
 
   <script>
+    /**
+     * `id-utility`
+     * Idaho utility bar appears at top of applications.
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
     class IdUtility extends Polymer.Element {
       static get is() { return 'id-utility'; }
       static get properties() {
@@ -236,12 +237,16 @@ Utility navigation element.
            * Base URL for getting user information.
            */
           baseUrl: String,
-
+          /**
+           * Route object passed by router.
+           */
           route: {
             type: Object,
             observer: '_routeChanged'
           },
-
+          /**
+           * Array of navigation items similar to whats passed to id-app-navigation.
+           */
           navigation: {
             type: Array,
             value: []
@@ -339,8 +344,7 @@ Utility navigation element.
        * @param  {object} e event detail;
        * @return null
        */
-      _signIn(e) {
-        e.preventDefault();
+      _signIn() {
         window.location = this.baseUrl + "login/index";
       }
 
@@ -349,24 +353,34 @@ Utility navigation element.
        * @param  {object} e event detail
        * @return null
        */
-      _signOut(e) {
-        e.preventDefault();
+      _signOut() {
         window.location = this.baseUrl + "logout/index";
       }
 
+      /**
+       * Courtesy function for navigating to idaho.gov
+       * @return null
+       */
       __goToIdaho() {
         window.location = 'https://www.idaho.gov';
       }
 
+      /**
+       * Checks whether the user is logged in. Used to redirect if it's a protected page.
+       * @return null
+       */
       __checkAuthState() {
         const route = this.navigation.find(x => x.path === this.route.path);
 
-        console.log(route, this.loggedIn, this.xhrFinished);
         if (route && route.protected && !this.loggedIn && this.xhrFinished) {
           this.set('route.path', '/welcome');
         }
       }
 
+      /**
+       * Observer function for route changes and auth checking.
+       * @return null
+       */
       _routeChanged() {
         if (this.loggedIn || !this.route) {
           return;
